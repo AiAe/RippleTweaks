@@ -1,0 +1,14 @@
+{
+  "manifest_version": 2,
+
+  "name": "Ripple tweaks",
+  "version": "1.0.0",
+  "description": "Eggplans",
+
+  "content_scripts": [{
+    "css": ["styles.css"],
+    "js": ["js.js", "content.js"],
+    "matches": ["https://ripple.moe/u/*", "http://ripple.moe/u/*"]
+  }]
+
+}
