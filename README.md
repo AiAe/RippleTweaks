@@ -1,2 +1,2 @@
 # RippleTweaks
-Eggplans
+Eggplants
