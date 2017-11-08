@@ -1,0 +1,46 @@
+<script src="https://code.jquery.com/jquery-1.11.3.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+<div style="margin: 0 auto; text-align: center; width: 95%; height: 380px;">
+<canvas id="myChart"></canvas>
+</div>
+<script>
+    Chart.defaults.global.defaultFontColor = "#fff";
+var ctx = document.getElementById("myChart").getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ dates|safe }},
+                datasets: [{
+
+                    label: 'Rank #',
+                    data: {{ values|safe }},
+                    fill: false,
+                    borderColor: [
+                        'rgba(255, 255, 255, 1)'
+                    ],
+                    borderWidth: 4
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                title: {
+                    display: false
+                },
+                legend: {
+                    display: false
+                },
+                animation: {
+                    duration: 0, // general animation time
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+
+                            reverse: true,
+                            beginAtZero:false
+                        }
+                    }]
+                }
+            }
+        });
+</script>
