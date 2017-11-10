@@ -6,6 +6,10 @@ import pymysql
 
 app = Flask(__name__)
 
+@app.route('/')
+def home():
+
+    return '<a href="https://github.com/AiAe/RippleTweaks">Ripple Tweaks</a>'
 
 def connect():
     connection = pymysql.connect(host="localhost", user="root", passwd="", db="pc", charset="utf8")
@@ -22,14 +26,11 @@ def execute(connection, cursor, sql, args=None):
         connection.connect()
         return execute(sql, args)
 
-
 def shift(l, n):
     return l[n:] + l[:n]
 
-
 days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
         31]
-
 
 def get_chart(id, mode):
     connection, cursor = connect()
@@ -67,6 +68,45 @@ def find_user(id):
     else:
 
         return False
+
+
+def add_event(id):
+
+    connection, cursor = connect()
+
+    get_user = requests.get("https://ripple.moe/api/v1/users/full", params={"id": id}).json()
+
+    std = []
+    taiko = []
+    ctb = []
+    mania = []
+
+    for n in range(1, 32):
+        stdg = get_user["std"]["global_leaderboard_rank"]
+        if stdg == None:
+            stdg = 1000000
+        std.append(stdg)
+
+        taikog = get_user["taiko"]["global_leaderboard_rank"]
+        if taikog == None:
+            taikog = 1000000
+        taiko.append(taikog)
+
+        ctbg = get_user["ctb"]["global_leaderboard_rank"]
+        if ctbg == None:
+            ctbg = 1000000
+        ctb.append(ctbg)
+
+        maniag = get_user["mania"]["global_leaderboard_rank"]
+        if maniag == None:
+            maniag = 1000000
+        mania.append(maniag)
+
+    try:
+        execute(connection, cursor, "INSERT INTO ranks (`user_id`, `std`, `taiko`, `ctb`, `mania`) VALUES (%s, %s, %s, %s, %s)",
+                    [id, str(std), str(taiko), str(ctb), str(mania)])
+    except:
+        return ''
 
 def update_event(id):
     date = datetime.datetime.now().strftime("%d")
@@ -119,19 +159,23 @@ def update_event(id):
                 "UPDATE ranks SET mania = %s WHERE user_id = %s",
                 [str(mania), user["user_id"]])
 
-@app.route('/')
-@app.route('/<id>/')
 @app.route('/<id>/<mode>/')
-def index(id=2185, mode=0):
+def chart(id, mode):
+    modes = [0, 1, 2, 3]
+
+    if id == None and mode not in modes:
+
+        return 'ERROR'
+
     if find_user(id):
         update_event(id)
         values, dates = get_chart(id, mode)
         return render_template('less.html', values=values, dates=dates, user_id=id)
 
     else:
-        update_event(2185)
-        values, dates = get_chart(2185, 0)
-        return render_template('less.html', values=values, dates=dates, user_id=2185)
+        add_event(id)
+        values, dates = get_chart(id, mode)
+        return render_template('less.html', values=values, dates=dates, user_id=id)
 
 
 if __name__ == "__main__":
