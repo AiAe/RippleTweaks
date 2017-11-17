@@ -1,4 +1,4 @@
-from flask import Flask, make_response, redirect, request, render_template, url_for
+from flask import Flask, render_template
 import json
 import requests
 import datetime
@@ -33,6 +33,7 @@ def execute(connection, cursor, sql, args=None):
 def shift(l, n):
     return l[n:] + l[:n]
 
+# Yeah
 days = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
         31]
 
@@ -169,7 +170,7 @@ def chart(id, mode, theme):
 
     if id == None and mode not in modes:
 
-        return 'ERROR'
+        return 'ERROR.'
 
     if theme == 'true':
         c = 'fff'
@@ -188,6 +189,10 @@ def chart(id, mode, theme):
         values, dates = get_chart(id, mode)
         return render_template('less.html', values=values, dates=dates, user_id=id, rgb=rgb, c=c)
 
+
+@app.errorhandler(404)
+def not_found(error):
+    return '<h2>ERROR. Make sure you use last version of Ripple Tweaks. Go to chrome://extensions/ and click Update all addons.</h2>'
 
 if __name__ == "__main__":
     app.run(debug=True, port=7001, use_reloader=True, threaded=True, host='127.0.0.1')
