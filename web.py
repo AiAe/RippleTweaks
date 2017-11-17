@@ -12,7 +12,11 @@ def home():
     return '<a href="https://github.com/AiAe/RippleTweaks">Ripple Tweaks</a>'
 
 def connect():
-    connection = pymysql.connect(host="localhost", user="root", passwd="", db="pc", charset="utf8")
+
+    with open("mysql.json", "r") as f:
+        mysql = json.load(f)
+
+    connection = pymysql.connect(**mysql, charset="utf8")
     connection.autocommit(True)
     cursor = connection.cursor(pymysql.cursors.DictCursor)
     return connection, cursor
