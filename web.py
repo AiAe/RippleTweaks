@@ -163,23 +163,30 @@ def update_event(id):
                 "UPDATE ranks SET mania = %s WHERE user_id = %s",
                 [str(mania), user["user_id"]])
 
-@app.route('/<id>/<mode>/')
-def chart(id, mode):
+@app.route('/<id>/<mode>/<theme>/')
+def chart(id, mode, theme):
     modes = [0, 1, 2, 3]
 
     if id == None and mode not in modes:
 
         return 'ERROR'
 
+    if theme == 'true':
+        c = 'fff'
+        rgb = '255, 255, 255, 1'
+    else:
+        c = '000'
+        rgb = '0, 0, 0, .95'
+
     if find_user(id):
         update_event(id)
         values, dates = get_chart(id, mode)
-        return render_template('less.html', values=values, dates=dates, user_id=id)
+        return render_template('less.html', values=values, dates=dates, user_id=id, rgb=rgb, c=c)
 
     else:
         add_event(id)
         values, dates = get_chart(id, mode)
-        return render_template('less.html', values=values, dates=dates, user_id=id)
+        return render_template('less.html', values=values, dates=dates, user_id=id, rgb=rgb, c=c)
 
 
 if __name__ == "__main__":
